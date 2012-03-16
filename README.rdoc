@@ -28,6 +28,7 @@ When it comes to creating your config/initializers/airbrake.rb file, deviate fro
                       :assigned_to => 'admin',                     # the login of a user the ticket should get assigned to by default (optional.)
                       :priority => 5,                              # the default priority (use a number, not a name. optional.)
                       :environment => 'staging',                   # application environment, gets prepended to the issue's subject and is stored as a custom issue field. useful to distinguish errors on a test system from those on the production system (optional).
+                      :hook_quarantine => 180                      # Time in seconds to quarantine the controller_issues_edit_after_save hook to avoid flooding listeners (optional)
                       :repository_root => '/some/path'             # this optional argument overrides the project wide repository root setting (see below).
                      }.to_yaml
     config.host = 'my_redmine_host.com'                            # the hostname your Redmine runs at

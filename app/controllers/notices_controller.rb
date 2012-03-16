@@ -2,6 +2,8 @@ require 'pp'
 
 class NoticesController < ActionController::Base
 
+  @@hook_quarantine = Time.new.to_i
+
   before_filter :check_enabled
   before_filter :find_or_create_custom_fields
 
@@ -57,8 +59,9 @@ class NoticesController < ActionController::Base
 
     issue = Issue.find_by_subject_and_project_id_and_tracker_id_and_author_id(subject, project.id, tracker.id, author.id)
     issue ||= Issue.new(:subject => subject, :project_id => project.id, :tracker_id => tracker.id, :author_id => author.id)
+    issue_is_new = issue.new_record?
 
-    if issue.new_record?
+    if issue_is_new
       # set standard redmine issue fields
       issue.category = IssueCategory.find_by_name(redmine_params[:category]) unless redmine_params[:category].blank?
       issue.assigned_to = User.find_by_login(redmine_params[:assigned_to]) unless redmine_params[:assigned_to].blank?
@@ -100,10 +103,15 @@ class NoticesController < ActionController::Base
 
     issue.save!
 
-    if issue.new_record?
+    if issue_is_new
       Mailer.deliver_issue_add(issue) if Setting.notified_events.include?('issue_added')
+      Redmine::Hook.call_hook(:controller_issues_new_after_save, { :issue => issue, :project => project })
     else
       Mailer.deliver_issue_edit(journal) if Setting.notified_events.include?('issue_updated')
+      if now = Time.new.to_i and @@hook_quarantine < now
+        Redmine::Hook.call_hook(:controller_issues_edit_after_save, { :issue => issue, :journal => journal })
+        @@hook_quarantine = now + redmine_params[:hook_quarantine].to_i
+      end
     end
     
     render :status => 200, :text => "Received bug report.\n<error-id>#{issue.id}</error-id>"
