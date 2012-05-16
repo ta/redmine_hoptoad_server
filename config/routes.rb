@@ -1,8 +1,6 @@
-ActionController::Routing::Routes.draw do |map|
+RedmineApp::Application.routes.draw do
 
-  map.with_options(:controller => 'notices', :method => :post) do |m|
-    m.connect 'notices', :action => 'index'
-    m.connect 'notifier_api/v2/notices', :action => 'index_v2'
-  end
+	match 'notices', :to => 'notices#index', :controller => 'notices', :via => :post
+	match 'notifier_api/v2/notices', :to => 'notices#index_v2', :controller => 'notices', :via => :post
 
 end
