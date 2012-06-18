@@ -198,31 +198,31 @@ class NoticesController < ActionController::Base
     @error_class_field = IssueCustomField.find_or_initialize_by_name('Error class')
     if @error_class_field.new_record?
       @error_class_field.attributes = {:field_format => 'string', :searchable => true, :is_filter => true}
-      @error_class_field.save(false)
+      @error_class_field.save(:validate => false)
     end
 
     @occurences_field = IssueCustomField.find_or_initialize_by_name('# Occurences')
     if @occurences_field.new_record?
       @occurences_field.attributes = {:field_format => 'int', :default_value => '0', :is_filter => true}
-      @occurences_field.save(false)
+      @occurences_field.save(:validate => false)
     end
 
     @environment_field = IssueCustomField.find_or_initialize_by_name('Environment')
     if @environment_field.new_record?
       @environment_field.attributes = {:field_format => 'string', :searchable => true, :is_filter => true}
-      @environment_field.save(false)
+      @environment_field.save(:validate => false)
     end
 
     @trace_filter_field = ProjectCustomField.find_or_initialize_by_name('Backtrace filter')
     if @trace_filter_field.new_record?
       @trace_filter_field.attributes = {:field_format => 'text'}
-      @trace_filter_field.save(false)
+      @trace_filter_field.save(:validate => false)
     end
 
     @repository_root_field = ProjectCustomField.find_or_initialize_by_name('Repository root')
     if @repository_root_field.new_record?
       @repository_root_field.attributes = {:field_format => 'string'}
-      @repository_root_field.save(false)
+      @repository_root_field.save(:validate => false)
     end
   end
   
